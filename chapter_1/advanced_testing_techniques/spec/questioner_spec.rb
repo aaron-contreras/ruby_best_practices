@@ -3,40 +3,50 @@
 require_relative '../lib/questioner'
 
 RSpec.describe Questioner do
-  subject(:questioner) { described_class.new }
+  let(:input) { double('Input') }
+  let(:output) { double('Output') }
+  subject(:questioner) { described_class.new(input, output) }
+  let(:question) { 'Are you happy?' }
 
-  describe '#yes_or_no' do
+  describe '#ask' do
     %w[y Y YeS YES yes].each do |yes|
       it "returns true when parses #{yes}" do
-        expect(questioner.yes_or_no(yes)).to eq(true)
+        allow(output).to receive(:puts).with(question).once
+        allow(input).to receive(:gets).and_return(yes).once
+
+        expect(questioner.ask(question)).to eq(true)
       end
     end
 
     %w[n N no nO].each do |no|
       it "returns false when parses #{no}" do
-        expect(questioner.yes_or_no(no)).to eq(false)
+        allow(output).to receive(:puts).with(question).once
+        allow(input).to receive(:gets).and_return(no).once
+        expect(questioner.ask(question)).to eq(false)
       end
     end
 
-    %w[Note Yesterday xyzaty hot].each do |other|
-      it "returns nil because #{other} is not a variant of 'yes' or 'no'" do
-        expect(questioner.yes_or_no(other)).to be_nil
-      end
-    end
-  end
+    [['y', true], ['n', false]].each do |input, state|
+      it "continues asking for input until given #{input}" do
 
-  describe 'inquire_about_happines' do
-    context "when gets 'yes'" do
-      it "responds 'Good I'm Glad'" do
-        allow(questioner).to receive(:ask).and_return(true)
-        expect(questioner.inquire_about_happiness).to eq("Good I'm Glad")
-      end
-    end
+        %w[Note Yesterday xyzaty hot].each do |other|
+          new_input = double('Input')
+          new_output = double('Output')
+          allow(new_input).to receive(:gets).and_return(other).once
+          allow(new_output).to receive(:puts).with(question).once
 
-    context "when gets 'no'" do
-      it "responds 'That's Too Bad'" do
-        allow(questioner).to receive(:ask).and_return(false)
-        expect(questioner.inquire_about_happiness).to eq("That's Too Bad")
+          new_questioner = described_class.new(input, output)
+          expect(new_questioner.ask(question)).to eq("I don't understand.")
+        end
+
+        new_input = double('Input')
+        new_output = double('Output')
+        allow(new_input).to receive(:gets).and_return(input).once
+        allow(new_output).to receive(:puts).with(question).once
+        new_questioner = described_class.new(new_input, new_output)
+
+
+        expect(new_questioner.ask(question)).to eq(state)
       end
     end
   end
