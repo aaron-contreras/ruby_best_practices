@@ -24,5 +24,21 @@ RSpec.describe Questioner do
       end
     end
   end
+
+  describe 'inquire_about_happines' do
+    context "when gets 'yes'" do
+      it "responds 'Good I'm Glad'" do
+        allow(questioner).to receive(:ask).and_return(true)
+        expect(questioner.inquire_about_happiness).to eq("Good I'm Glad")
+      end
+    end
+
+    context "when gets 'no'" do
+      it "responds 'That's Too Bad'" do
+        allow(questioner).to receive(:ask).and_return(false)
+        expect(questioner.inquire_about_happiness).to eq("That's Too Bad")
+      end
+    end
+  end
 end
 

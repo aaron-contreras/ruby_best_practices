@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 class Questioner
+  def inquire_about_happiness
+    ask('Are you happy?') ? "Good I'm Glad" : "That's Too Bad"
+  end
+
   def ask(question)
     puts question
     response = yes_or_no(gets.chomp)
