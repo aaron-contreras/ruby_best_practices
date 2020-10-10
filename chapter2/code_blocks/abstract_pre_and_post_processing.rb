@@ -71,6 +71,10 @@ class Server
     @handlers[pattern] = block
   end
 
+  def enlisted_commands
+    @handlers.keys.join(', ')
+  end
+
   def run
     while session = @server.accept
       msg = session.gets
