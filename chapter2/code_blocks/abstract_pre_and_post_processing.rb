@@ -67,6 +67,12 @@ class Server
     @handlers = {}
   end
 
+  def self.run(port=3333, &block)
+    server = self.new(port)
+    server.instance_eval(&block)
+    server.run
+  end
+
   def handle(pattern, &block)
     @handlers[pattern] = block
   end
